@@ -19,7 +19,7 @@ namespace ConfigurationService
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration(builder => builder.AddJsonFile("appsettings.json"))
+                .ConfigureAppConfiguration((ctx, builder) => builder.AddJsonFile($"appsettings.{ctx.HostingEnvironment.EnvironmentName}.json"))
                 .UseStartup<Startup>()
                 .Build();
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ConfigurationService.Models
 {
@@ -8,5 +9,6 @@ namespace ConfigurationService.Models
         public Guid DeviceId { get; set; }
         public string Type { get; set; }
         public Configuration Config { get; set; }
+        public List<Attachment> Instructions { get; set; }
     }
 }

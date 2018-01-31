@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		ConfigurationService\appsettings.Development.json = ConfigurationService\appsettings.Development.json
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigurationService.Integration.Tests", "ConfigurationService.Integration.Tests\ConfigurationService.Integration.Tests.csproj", "{CD21D928-BC65-41E3-8D51-EF7DB857FDED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,10 @@ Global
 		{1A878C97-AC94-4672-98B4-9E094F3CC1CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A878C97-AC94-4672-98B4-9E094F3CC1CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A878C97-AC94-4672-98B4-9E094F3CC1CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD21D928-BC65-41E3-8D51-EF7DB857FDED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD21D928-BC65-41E3-8D51-EF7DB857FDED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD21D928-BC65-41E3-8D51-EF7DB857FDED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD21D928-BC65-41E3-8D51-EF7DB857FDED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

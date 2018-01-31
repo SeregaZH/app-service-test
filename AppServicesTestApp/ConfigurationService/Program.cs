@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore;
+﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace ConfigurationService
 {
@@ -14,13 +8,24 @@ namespace ConfigurationService
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+           BuildWebHost(args).Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((ctx, builder) => builder.AddJsonFile($"appsettings.{ctx.HostingEnvironment.EnvironmentName}.json"))
-                .UseStartup<Startup>()
-                .Build();
+        public static IWebHost BuildWebHost(string[] args) => CreateHostBuilder(args).Build();
+
+        public static IWebHostBuilder CreateBaseHostBuilder(string[] args)
+        {
+            return WebHost.CreateDefaultBuilder(args)
+                .UseApplicationInsights()
+                .UseAzureAppServices()
+                .UseStartup<Startup>();
+        }
+
+        public static IWebHostBuilder CreateHostBuilder(string[] args)
+        {
+            return CreateBaseHostBuilder(args)
+                .ConfigureAppConfiguration((ctx, builder) =>
+                    builder.AddJsonFile($"appsettings.{ctx.HostingEnvironment.EnvironmentName}.json"));
+        }
     }
 }

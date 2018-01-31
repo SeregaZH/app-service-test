@@ -2,6 +2,7 @@
 using ConfigurationService.Data;
 using ConfigurationService.Exctensions;
 using ConfigurationService.Models;
+using ConfigurationService.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Azure.Documents;
@@ -29,6 +30,9 @@ namespace ConfigurationService
                 var databaseId = sl.GetService<IConfiguration>().GetValue<string>("DatabaseId");
                 return new CosmosDBRepository<Device, Guid>(sl.GetService<IDocumentClient>(), databaseId);
             });
+            services.TryAddScoped<IAttachmentRepository<Device>>(s => new AttachmentRepository<Device>(s.GetService<IConfiguration>(), s.GetService<IHostingEnvironment>(), "instructions"));
+            services.TryAddTransient<IDeviceService<Guid>, DeviceService>();
+            services.TryAddTransient<IAttachmentsService, AttachmentService>();
             services.AddMvc();
         }
 

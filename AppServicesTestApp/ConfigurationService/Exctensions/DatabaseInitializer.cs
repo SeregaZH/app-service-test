@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using ConfigurationService.Models;
 using Microsoft.AspNetCore.Builder;

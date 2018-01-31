@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using ConfigurationService.Data;
 using ConfigurationService.Models;
+using ConfigurationService.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ConfigurationService.Controllers
@@ -10,32 +10,34 @@ namespace ConfigurationService.Controllers
     [Route("api/[controller]")]
     public class DevicesController : Controller
     {
-        private readonly IDocumentRepository<Device, Guid> _deviceRepository;
+        private readonly IDeviceService<Guid> _deviceService;
+        private readonly IAttachmentsService _attachmentsService;
 
-        public DevicesController(IDocumentRepository<Device, Guid> deviceRepository)
+        public DevicesController(IDeviceService<Guid> deviceService, IAttachmentsService attachmentsService)
         {
-            _deviceRepository = deviceRepository;
+            _deviceService = deviceService;
+            _attachmentsService = attachmentsService;
         }
         
         // GET api/values
         [HttpGet]
         public async Task<IEnumerable<Device>> Get()
         {
-            return await _deviceRepository.GetAllAsync();
+            return await _deviceService.GetAllAsync();
         }
 
         // GET api/values/5
         [HttpGet("{id}", Name = "device")]
         public async Task<Device> Get(Guid id)
         {
-            return await _deviceRepository.GetByIdAsync(id);
+            return await _deviceService.GetByIdAsync(id);
         }
 
         // POST api/values
         [HttpPost]
         public async Task<IActionResult> Post([FromBody]Device device)
         {
-            var entity = await _deviceRepository.AddOrUpdateAsync(device);
+            var entity = await _deviceService.CreateAsync(device);
             return CreatedAtRoute("device", new { id = entity.Id }, entity);
         }
 
@@ -43,16 +45,22 @@ namespace ConfigurationService.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(Guid id, [FromBody]Device device)
         {
-            var entity = await _deviceRepository.AddOrUpdateAsync(device);
-            return Ok(entity);
+            throw new NotImplementedException();
+            return Ok();
         }
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            await _deviceRepository.RemoveAsync(id);
+            throw new NotImplementedException();
             return Ok();
+        }
+
+        [HttpGet("{id}/attachments/{attachmentName}")]
+        public async Task<IActionResult> GetAttachment(Guid id, string attachmentName)
+        {
+            return new FileStreamResult(await _attachmentsService.ReadAttachmentContentAsync(attachmentName), "application/pdf");
         }
     }
 }

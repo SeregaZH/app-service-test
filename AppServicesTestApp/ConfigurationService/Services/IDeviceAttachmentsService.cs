@@ -12,6 +12,8 @@ namespace ConfigurationService.Services
         
         Task<Stream> ReadInstructionContentAsync(string name);
 
+        Task<Stream> ReadAttachmentContentAsync(Guid deviceId, string name);
+
         Task<string> CreateAttacmentAsync(Guid deviceId, string name, Stream content);
     }
 }

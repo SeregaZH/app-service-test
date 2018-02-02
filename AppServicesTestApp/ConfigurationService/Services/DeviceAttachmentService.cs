@@ -39,9 +39,18 @@ namespace ConfigurationService.Services
             return await _fileRepository.GetContentAsync(name, _folderStructureProvider.CreateFolderStructure("devices", "instructions"));
         }
 
+        public async Task<Stream> ReadAttachmentContentAsync(Guid deviceId, string name)
+        {
+            var paramResolvers = new Dictionary<string, Func<dynamic, string>> { { nameof(deviceId), a => a.deviceId.ToString("N") } }.ToImmutableDictionary();
+            var folderStructure =
+                _folderStructureProvider.CreateFolderStructure("devices", "attachments", new { deviceId },
+                    paramResolvers);
+            return await _fileRepository.GetContentAsync(name, folderStructure);
+        }
+
         public async Task<string> CreateAttacmentAsync(Guid deviceId, string name, Stream content)
         {
-            var paramResolvers = new Dictionary<string, Func<dynamic, string>> {{ nameof(deviceId), a => a.deviceId.ToString() }}.ToImmutableDictionary();
+            var paramResolvers = new Dictionary<string, Func<dynamic, string>> {{ nameof(deviceId), a => a.deviceId.ToString("N") }}.ToImmutableDictionary(); 
             var folderStructure =
                 _folderStructureProvider.CreateFolderStructure("devices", "attachments", new {deviceId},
                     paramResolvers);

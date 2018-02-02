@@ -64,15 +64,15 @@ namespace ConfigurationService.Controllers
         [HttpGet("{id}/attachments/{attachmentName}", Name = "attachmentsGet")]
         public async Task<IActionResult> GetAttachment(Guid id, string attachmentName)
         {
-            return new FileStreamResult(await _deviceAttachmentsService.ReadInstructionContentAsync(attachmentName), "application/octet-stream");
+            return new FileStreamResult(await _deviceAttachmentsService.ReadAttachmentContentAsync(id, attachmentName), "application/octet-stream");
         }
 
         [HttpPost("{id}/attachments")]
-        public async Task<IActionResult> CreateAttachment([FromQuery]Guid id, IFormFile file)
+        public async Task<IActionResult> CreateAttachment(Guid id, IFormFile file)
         {
             using (var stream = file.OpenReadStream())
             {
-                return CreatedAtRoute("attachmentsGet", new { id, file.Name },
+                return CreatedAtRoute("attachmentsGet", new { id, attachmentName = file.Name },
                     await _deviceAttachmentsService.CreateAttacmentAsync(id, file.Name, stream));
             }
         }

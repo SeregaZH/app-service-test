@@ -30,9 +30,11 @@ namespace ConfigurationService
                 var databaseId = sl.GetService<IConfiguration>().GetValue<string>("DatabaseId");
                 return new CosmosDBRepository<Device, Guid>(sl.GetService<IDocumentClient>(), databaseId);
             });
-            services.TryAddScoped<IAttachmentRepository<Device>>(s => new AttachmentRepository<Device>(s.GetService<IConfiguration>(), s.GetService<IHostingEnvironment>(), "instructions"));
+            services.TryAddScoped<IFileRepository, FileRepository>();
+            services.TryAddSingleton<IStorageClientProvider, StorageClientProvider>();
             services.TryAddTransient<IDeviceService<Guid>, DeviceService>();
-            services.TryAddTransient<IAttachmentsService, AttachmentService>();
+            services.TryAddTransient<IDeviceAttachmentsService, DeviceAttachmentService>();
+            services.TryAddTransient<IFolderStructureProvider, FolderStructureProvider>();
             services.AddMvc();
         }
 
@@ -42,6 +44,7 @@ namespace ConfigurationService
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseDeveloperUser();
             }
 
             app.InitializeDatabaseAsync().GetAwaiter().GetResult();

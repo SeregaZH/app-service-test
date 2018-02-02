@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore;
+﻿using System;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 
@@ -18,6 +19,10 @@ namespace ConfigurationService
             return WebHost.CreateDefaultBuilder(args)
                 .UseApplicationInsights()
                 .UseAzureAppServices()
+                .UseKestrel(options =>
+                {
+                    options.Limits.MaxRequestBodySize = (long)Math.Pow(2, 30);
+                })
                 .UseStartup<Startup>();
         }
 

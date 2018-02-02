@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using ConfigurationService.Models;
 using ConfigurationService.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ConfigurationService.Controllers
@@ -11,12 +12,15 @@ namespace ConfigurationService.Controllers
     public class DevicesController : Controller
     {
         private readonly IDeviceService<Guid> _deviceService;
-        private readonly IAttachmentsService _attachmentsService;
+        private readonly IDeviceAttachmentsService _deviceAttachmentsService;
 
-        public DevicesController(IDeviceService<Guid> deviceService, IAttachmentsService attachmentsService)
+        public DevicesController(
+            IDeviceService<Guid> deviceService, 
+            IDeviceAttachmentsService deviceAttachmentsService
+            )
         {
             _deviceService = deviceService;
-            _attachmentsService = attachmentsService;
+            _deviceAttachmentsService = deviceAttachmentsService;
         }
         
         // GET api/values
@@ -57,10 +61,20 @@ namespace ConfigurationService.Controllers
             return Ok();
         }
 
-        [HttpGet("{id}/attachments/{attachmentName}")]
+        [HttpGet("{id}/attachments/{attachmentName}", Name = "attachmentsGet")]
         public async Task<IActionResult> GetAttachment(Guid id, string attachmentName)
         {
-            return new FileStreamResult(await _attachmentsService.ReadAttachmentContentAsync(attachmentName), "application/pdf");
+            return new FileStreamResult(await _deviceAttachmentsService.ReadInstructionContentAsync(attachmentName), "application/octet-stream");
+        }
+
+        [HttpPost("{id}/attachments")]
+        public async Task<IActionResult> CreateAttachment([FromQuery]Guid id, IFormFile file)
+        {
+            using (var stream = file.OpenReadStream())
+            {
+                return CreatedAtRoute("attachmentsGet", new { id, file.Name },
+                    await _deviceAttachmentsService.CreateAttacmentAsync(id, file.Name, stream));
+            }
         }
     }
 }

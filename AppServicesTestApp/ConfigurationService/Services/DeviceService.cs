@@ -11,20 +11,20 @@ namespace ConfigurationService.Services
     public sealed class DeviceService : IDeviceService<Guid>
     {
         private readonly IDocumentRepository<Device, Guid> _deviceRepository;
-        private readonly IAttachmentsService _attachmentsService;
+        private readonly IDeviceAttachmentsService _deviceAttachmentsService;
         
         public DeviceService(
             IDocumentRepository<Device, Guid> deviceRepository, 
-            IAttachmentsService attachmentsService
+            IDeviceAttachmentsService deviceAttachmentsService
         )
         { 
             _deviceRepository = deviceRepository;
-            _attachmentsService = attachmentsService;
+            _deviceAttachmentsService = deviceAttachmentsService;
         }
 
         public async Task<Device> CreateAsync(Device device)
         {
-            device.Instructions = (await _attachmentsService.CreateAttachmentsAsync(device.DeviceId, device.Instructions)).ToList();
+            device.Instructions = (await _deviceAttachmentsService.CreateInstructionsAsync(device.DeviceId, device.Instructions)).ToList();
             return await _deviceRepository.AddOrUpdateAsync(device);
         }
 

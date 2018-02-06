@@ -49,7 +49,7 @@ namespace ConfigurationService.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(Guid id, [FromBody]Device device)
         {
-            throw new NotImplementedException();
+            
             return Ok();
         }
 
@@ -57,7 +57,7 @@ namespace ConfigurationService.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            throw new NotImplementedException();
+            await _deviceService.DeleteAsync(id);
             return Ok();
         }
 

@@ -1,18 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
+using ConfigurationService.Exceptions;
+using ConfigurationService.Models;
+using ConfigurationService.Services.Exceptions;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
+using Microsoft.Azure.Documents.Linq;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace ConfigurationService.Data
 {
     public sealed class CosmosDBRepository<T, TId> : IDocumentRepository<T, TId> 
-        where T : class
+        where T : DocumentEntity
         where TId: struct 
     {
         private const string DefaultIdentityProperty = "Id";
@@ -47,10 +53,35 @@ namespace ConfigurationService.Data
                 id.ToString()))).StatusCode == HttpStatusCode.OK;
         }
 
-        public async Task<T> AddOrUpdateAsync(T entity, RequestOptions requestOptions = null)
+        public async Task<T> CreateAsync(T entity, RequestOptions requestOptions = null)
         {
-            var upsertEntity = await _client.UpsertDocumentAsync(_collectionUri, entity, requestOptions);
-            return JsonConvert.DeserializeObject<T>(upsertEntity.Resource.ToString());
+            Document upsertEntity = await _client.UpsertDocumentAsync(_collectionUri, entity, requestOptions);
+            return (T)(dynamic)upsertEntity;
+        }
+
+        public async Task<T> UpdateAsync(TId id, T entity, RequestOptions requestOptions = null, Action<T, T> mapper = null)
+        {
+            var ac = new AccessCondition { Condition = entity.ETag, Type = AccessConditionType.IfMatch };
+
+            Document updated;
+            try
+            {
+                updated = await _client.ReplaceDocumentAsync(
+                    UriFactory.CreateDocumentUri(_databaseId, _collectionName, id.ToString()), entity, new RequestOptions { AccessCondition = ac });
+            }
+            catch (DocumentClientException e)
+            {
+                switch (e.StatusCode)
+                {
+                    case HttpStatusCode.PreconditionFailed:
+                        throw new ConflictException($"Conflict old etag:{entity.ETag}");
+                    case HttpStatusCode.NotFound:
+                        throw new NotFoundException();
+                    default: throw;
+                }
+            }
+
+            return (T) (dynamic) updated;
         }
 
         public Task<int> CountAsync()
@@ -70,7 +101,9 @@ namespace ConfigurationService.Data
 
         public async Task<T> GetByIdAsync(TId id)
         {
-            return await Task.FromResult((T)(dynamic)_client.CreateDocumentQuery<Document>(_collectionUri).Where(d => d.Id == id.ToString()).AsEnumerable().FirstOrDefault());
+            var res = (T) (dynamic) _client.CreateDocumentQuery<Document>(_collectionUri)
+                .Where(d => d.Id == id.ToString()).AsEnumerable().FirstOrDefault();
+            return await Task.FromResult(res);
         }
 
         public Task<T> FirstOrDefaultAsync(Func<T, bool> predicate)

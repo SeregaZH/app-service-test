@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ConfigurationService.Data;
 using ConfigurationService.Models;
-using ConfigurationService.Services.Exceptions;
 
 namespace ConfigurationService.Services
 {
@@ -35,15 +32,15 @@ namespace ConfigurationService.Services
             return await _deviceRepository.GetAllAsync();
         }
 
-        public async Task<ActionResult<bool, object>> DeleteAsync(Guid id)
+        public async Task<ActionResult<Device, object>> DeleteAsync(Guid id, string eTag)
         {
-            var isDeleted = await _deviceRepository.RemoveAsync(id);
-            return new ActionResult<bool, object>(isDeleted);
+            var deletedResource = await _deviceRepository.RemoveAsync(id, eTag);
+            return new ActionResult<Device, object>(deletedResource);
         }
 
         public async Task<ActionResult<Device, object>> UpdateAsync(Guid id, Device device)
         {
-            throw new NotImplementedException();
+            return new ActionResult<Device, object>(await _deviceRepository.UpdateAsync(id, device));
         }
 
         public async Task<Device> GetByIdAsync(Guid id)

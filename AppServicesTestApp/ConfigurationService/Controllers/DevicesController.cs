@@ -49,15 +49,15 @@ namespace ConfigurationService.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(Guid id, [FromBody]Device device)
         {
-            
-            return Ok();
+            var entity = await _deviceService.UpdateAsync(id, device);
+            return Ok(entity);
         }
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id, [FromQuery]string eTag)
         {
-            await _deviceService.DeleteAsync(id);
+            await _deviceService.DeleteAsync(id, eTag);
             return Ok();
         }
 

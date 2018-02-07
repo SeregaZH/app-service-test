@@ -12,10 +12,9 @@ namespace ConfigurationService.Data
         where TId : struct
 
     {
-        Task<bool> RemoveAsync(RequestOptions requestOptions = null);
-        Task<bool> RemoveAsync(TId id, RequestOptions requestOptions = null);
+        Task<T> RemoveAsync(TId id, string ETag, RequestOptions requestOptions = null);
         Task<T> CreateAsync(T entity, RequestOptions requestOptions = null);
-        Task<T> UpdateAsync(TId id, T entity, RequestOptions requestOptions = null, Action<T, T> mapper = null);
+        Task<T> UpdateAsync(TId id, T entity, RequestOptions requestOptions = null);
         Task<int> CountAsync();
         Task<int> CountAsync(Expression<Func<T, bool>> predicate);
         Task<IEnumerable<T>> GetAllAsync();

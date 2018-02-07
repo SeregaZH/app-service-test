@@ -42,15 +42,30 @@ namespace ConfigurationService.Data
             _collectionUri = UriFactory.CreateDocumentCollectionUri(databaseId, _collectionName);
         }
 
-        public Task<bool> RemoveAsync(RequestOptions requestOptions = null)
+        public async Task<T> RemoveAsync(TId id, string ETag, RequestOptions requestOptions = null)
         {
-            throw new NotImplementedException();
-        }
+            Document result = null;
+            var ac = new AccessCondition {Condition = ETag, Type = AccessConditionType.IfMatch};
 
-        public async Task<bool> RemoveAsync(TId id, RequestOptions requestOptions = null)
-        {
-            return (await _client.DeleteDocumentAsync(UriFactory.CreateDocumentUri(_databaseId, _collectionName,
-                id.ToString()))).StatusCode == HttpStatusCode.OK;
+            try
+            {
+                result = await _client.DeleteDocumentAsync(UriFactory.CreateDocumentUri(_databaseId, _collectionName,
+                    id.ToString()), new RequestOptions {AccessCondition = ac});
+            }
+            catch (DocumentClientException e)
+            {
+                switch (e.StatusCode)
+                {
+                    case HttpStatusCode.PreconditionFailed:
+                        throw new ConflictException();
+                    case HttpStatusCode.NotFound:
+                        throw new NotFoundException();
+                    default: throw;
+                }
+            }
+
+
+            return (T) (dynamic) result;
         }
 
         public async Task<T> CreateAsync(T entity, RequestOptions requestOptions = null)
@@ -59,7 +74,7 @@ namespace ConfigurationService.Data
             return (T)(dynamic)upsertEntity;
         }
 
-        public async Task<T> UpdateAsync(TId id, T entity, RequestOptions requestOptions = null, Action<T, T> mapper = null)
+        public async Task<T> UpdateAsync(TId id, T entity, RequestOptions requestOptions = null)
         {
             var ac = new AccessCondition { Condition = entity.ETag, Type = AccessConditionType.IfMatch };
 

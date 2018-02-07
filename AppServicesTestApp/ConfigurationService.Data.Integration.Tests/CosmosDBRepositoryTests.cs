@@ -50,7 +50,7 @@ namespace ConfigurationService.Data.Integration.Tests
                 }
             };
 
-            var updatedEntity = await _sut.UpdateAsync(newEntity.Id, newEntity, mapper: CreateDeviceFullMap());
+            var updatedEntity = await _sut.UpdateAsync(newEntity.Id, newEntity);
             Assert.Equal(updatedEntity.Config.FirmwareVersion, newEntity.Config.FirmwareVersion);
             Assert.NotNull(updatedEntity.ETag);
         }
@@ -90,7 +90,7 @@ namespace ConfigurationService.Data.Integration.Tests
                 ETag = insertedEntity.Resource.ETag 
             };
 
-            await Assert.ThrowsAsync<ConflictException>(async () => await _sut.UpdateAsync(newEntity.Id, newEntity, mapper: CreateDeviceFullMap()));
+            await Assert.ThrowsAsync<ConflictException>(async () => await _sut.UpdateAsync(newEntity.Id, newEntity));
         }
 
         [Fact]
@@ -120,7 +120,7 @@ namespace ConfigurationService.Data.Integration.Tests
                 ETag = insertedEntity.ETag
             };
 
-            await Assert.ThrowsAsync<NotFoundException>(async () => await _sut.UpdateAsync(newEntity.Id, newEntity, mapper: CreateDeviceFullMap()));
+            await Assert.ThrowsAsync<NotFoundException>(async () => await _sut.UpdateAsync(newEntity.Id, newEntity));
         }
 
         [Fact]

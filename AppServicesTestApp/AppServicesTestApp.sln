@@ -12,7 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConfigurationService.E2E.Tests", "ConfigurationService.E2E.Tests\ConfigurationService.E2E.Tests.csproj", "{CD21D928-BC65-41E3-8D51-EF7DB857FDED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigurationService.Data.Integration.Tests", "ConfigurationService.Data.Integration.Tests\ConfigurationService.Data.Integration.Tests.csproj", "{985C7462-D034-431E-9FD4-7957D716C144}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConfigurationService.Data.Integration.Tests", "ConfigurationService.Data.Integration.Tests\ConfigurationService.Data.Integration.Tests.csproj", "{985C7462-D034-431E-9FD4-7957D716C144}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
